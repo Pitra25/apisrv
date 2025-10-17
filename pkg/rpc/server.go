@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"apisrv/pkg/newsportal"
 	"net/http"
 
 	"apisrv/pkg/db"
@@ -9,6 +10,12 @@ import (
 	zm "github.com/vmkteam/zenrpc-middleware"
 	"github.com/vmkteam/zenrpc/v2"
 )
+
+type NewsService struct {
+	zenrpc.Service
+	m *newsportal.Manager
+	l embedlog.Logger
+}
 
 var (
 	ErrNotImplemented = zenrpc.NewStringError(http.StatusInternalServerError, "not implemented")
@@ -24,7 +31,7 @@ var allowDebugFn = func() zm.AllowDebugFunc {
 //go:generate go tool zenrpc
 
 // New returns new zenrpc Server.
-func New(dbo db.DB, logger embedlog.Logger, isDevel bool) zenrpc.Server {
+func New(dbo db.DB, logger embedlog.Logger, manager *newsportal.Manager, isDevel bool) zenrpc.Server {
 	rpc := zenrpc.NewServer(zenrpc.Options{
 		ExposeSMD: true,
 		AllowCORS: true,
@@ -47,8 +54,10 @@ func New(dbo db.DB, logger embedlog.Logger, isDevel bool) zenrpc.Server {
 
 	// services
 	rpc.RegisterAll(map[string]zenrpc.Invoker{
-		// "sample": NewSampleService(db, logger),
+		// "sample": NewSampleService(db, l),
 	})
+
+	rpc.Register("news", NewsService{m: manager, l: logger})
 
 	return rpc
 }

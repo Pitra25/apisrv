@@ -1,6 +1,7 @@
 package app
 
 import (
+	"apisrv/pkg/newsportal"
 	"context"
 	"fmt"
 	"net/http"
@@ -61,7 +62,8 @@ func (a *App) registerDebugHandlers() {
 
 // registerAPIHandlers registers main rpc server.
 func (a *App) registerAPIHandlers() {
-	srv := rpc.New(a.db, a.Logger, a.cfg.Server.IsDevel)
+	manager := newsportal.NewManager(&a.db)
+	srv := rpc.New(a.db, a.Logger, manager, a.cfg.Server.IsDevel)
 	gen := rpcgen.FromSMD(srv.SMD())
 
 	a.echo.Any("/v1/rpc/", zm.EchoHandler(zm.XRequestID(srv)))

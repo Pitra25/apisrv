@@ -13,7 +13,12 @@ import (
 	"github.com/vmkteam/embedlog"
 )
 
-var logger embedlog.Logger
+type Cleaner func()
+
+var (
+	logger     embedlog.Logger
+	emptyClean Cleaner = func() {}
+)
 
 func getenv(key, fallback string) string {
 	if val := os.Getenv(key); val != "" {
@@ -21,8 +26,6 @@ func getenv(key, fallback string) string {
 	}
 	return fallback
 }
-
-type Cleaner func()
 
 func Setup(t *testing.T) (db.DB, embedlog.Logger) {
 	// Create db connection
@@ -51,12 +54,12 @@ func setup() (*pg.DB, error) {
 	var (
 		pghost = getenv("PGHOST", "localhost")
 		pgport = getenv("PGPORT", "5432")
-		pgdb   = getenv("PGDATABASE", "test-apisrv")
+		pgdb   = getenv("PGDATABASE", "postgres")
 		pguser = getenv("PGUSER", "postgres")
 		pgpass = getenv("PGPASSWORD", "postgres")
 	)
 
-	url := fmt.Sprintf("postgresql://%s:%s@%s/%s?sslmode=disable", pguser, pgpass, net.JoinHostPort(pghost, pgport), pgdb)
+	url := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", pguser, pgpass, net.JoinHostPort(pghost, pgport), pgdb)
 
 	cfg, err := pg.ParseURL(url)
 	if err != nil {
@@ -82,6 +85,13 @@ func (d testDBLogQuery) AfterQuery(ctx context.Context, q *pg.QueryEvent) error 
 		logger.Print(ctx, string(fm))
 	}
 	return nil
+}
+
+func cutS(str string, maxLen int) string {
+	if maxLen == 0 {
+		return str
+	}
+	return string([]rune(str)[:min(len(str), maxLen)])
 }
 
 func Ptr[T any](v T) *T {

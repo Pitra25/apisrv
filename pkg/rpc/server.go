@@ -13,7 +13,7 @@ import (
 
 type NewsService struct {
 	zenrpc.Service
-	m *newsportal.Manager
+	m newsportal.Manager
 	l embedlog.Logger
 }
 
@@ -57,7 +57,7 @@ func New(dbo db.DB, logger embedlog.Logger, manager *newsportal.Manager, isDevel
 		// "sample": NewSampleService(db, l),
 	})
 
-	rpc.Register("news", NewsService{m: manager, l: logger})
+	rpc.Register("news", NewsService{m: *manager, l: logger})
 
 	return rpc
 }

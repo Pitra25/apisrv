@@ -27,7 +27,7 @@ func (ns *NewsService) News(ctx context.Context, params *queryParams) ([]NewsSum
 //zenrpc:200 ok
 //zenrpc:404 not found
 func (ns *NewsService) GetById(ctx context.Context, id int) (*News, error) {
-	news, err := ns.m.GetNewsById(ctx, id)
+	news, err := ns.m.GetNewsByID(ctx, id)
 	if err != nil {
 		return nil, newInternalError(err)
 	} else if news == nil {

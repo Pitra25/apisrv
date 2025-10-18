@@ -45,6 +45,15 @@ type (
 	User struct{ db.User }
 )
 
+func NewFilters(categoryId, tagId, pageSize, page int) Filters {
+	return Filters{
+		CategoryId: categoryId,
+		TagId:      tagId,
+		PageSize:   pageSize,
+		Page:       page,
+	}
+}
+
 func (f *Filters) NewsToDB() *db.NewsSearch {
 	statusID := db.StatusEnabled
 	timeNow := time.Now()
@@ -70,13 +79,4 @@ func (f *Filters) UserToDB() *db.UserSearch {
 		filter.ID = &f.UserId
 	}
 	return &filter
-}
-
-func NewFilters(categoryId, tagId, pageSize, page int) Filters {
-	return Filters{
-		CategoryId: categoryId,
-		TagId:      tagId,
-		PageSize:   pageSize,
-		Page:       page,
-	}
 }

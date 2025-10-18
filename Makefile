@@ -38,15 +38,19 @@ tools:
 	@go install github.com/vmkteam/mfd-generator@latest
 	@go install github.com/vmkteam/pgmigrator@latest
 	@go install github.com/vmkteam/colgen/cmd/colgen@latest
-	@curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin ${LINT_VERSION}
+	@curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH) ${LINT_VERSION}
 
 fmt:
 	@golangci-lint fmt
 
 lint:
-	@golangci-lint version
-	@golangci-lint config verify
-	@golangci-lint run
+	@/home/user/go/golangci-lint version
+	@/home/user/go/golangci-lint config verify
+	@/home/user/go/golangci-lint run
+
+check-env:
+	@echo "GOPATH: $(shell go env GOPATH)"
+	@echo "PATH: $(PATH)"
 
 build:
 	@CGO_ENABLED=0 go build $(GOFLAGS) -o ${NAME} $(MAIN)

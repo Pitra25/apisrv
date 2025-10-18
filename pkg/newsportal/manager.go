@@ -38,13 +38,13 @@ func (m *Manager) GetNewsByFilters(ctx context.Context, fil Filters) ([]News, er
 		return nil, fmt.Errorf("tags fetch failed: %w", err)
 	}
 
-	//collect everything in a news array
+	// collect everything in a news array
 	result.SetTags(tags)
 
 	return result, nil
 }
 
-func (m *Manager) GetNewsById(ctx context.Context, id int) (*News, error) {
+func (m *Manager) GetNewsByID(ctx context.Context, id int) (*News, error) {
 	// receiving news by ID
 	news, err := m.repoNews.NewsByID(ctx, id, db.WithColumns(db.Columns.News.Category))
 	if err != nil {
